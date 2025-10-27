@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>squakpao.art</title>
+<style>
+  body {
+    margin: 0;
+    background-color: #0a0a0a;
+    color: #d1d1d1;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    cursor: none;
+  }
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+  h1 {
+    font-size: 2rem;
+    color: #00ffbb;
+    margin-bottom: 0.2em;
+    z-index: 1;
+    pointer-events: none;
+  }
+  p {
+    margin-bottom: 1.2em;
+    color: #aaa;
+    z-index: 1;
+    pointer-events: none;
+  }
+  a {
+    color: #00ffbb;
+    text-decoration: none;
+    margin: 0.3em;
+    transition: 0.2s;
+    z-index: 3;
+    position: relative;
+    cursor: pointer;
+  }
+  a:hover {
+    color: #00ffaa;
+    text-shadow: 0 0 5px #00ffaa;
+  }
+  footer {
+    position: absolute;
+    bottom: 1rem;
+    font-size: 0.8rem;
+    color: #444;
+    z-index: 1;
+    pointer-events: none;
+  }
+  #cursor {
+    position: absolute;
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .hidden {
+    opacity: 0;
+  }
+  #links {
+    z-index: 3;
+    position: relative;
+  }
+</style>
+</head>
+<body>
+<h1 id="title"></h1>
+<p id="description" class="hidden"></p>
+<div id="links" class="hidden">
+  <a href="https://files.squakpao.art" target="_blank">File Uploading</a> | 
+  <a href="https://api.squakpao.art" target="_blank">API Docs</a>
+</div>
+<footer id="footer" class="hidden"></footer>
+<div id="cursor">★</div>
+<canvas id="stars"></canvas>
+<script>
+const titleText = "squakpao.art";
+const descriptionText = "just a small and fun project I guess, probably going to be used for tcu idfk";
+const footerText = "© 2025 squakpao";
+let titleIndex = 0;
+let descriptionIndex = 0;
+let footerIndex = 0;
+function typeTitle() {
+  if (titleIndex < titleText.length) {
+    document.getElementById("title").innerHTML += titleText.charAt(titleIndex);
+    titleIndex++;
+    setTimeout(typeTitle, 100);
+  } else {
+    document.getElementById("description").classList.remove("hidden");
+    setTimeout(typeDescription, 500);
+  }
+}
+function typeDescription() {
+  if (descriptionIndex < descriptionText.length) {
+    document.getElementById("description").innerHTML += descriptionText.charAt(descriptionIndex);
+    descriptionIndex++;
+    setTimeout(typeDescription, 50);
+  } else {
+    document.getElementById("links").classList.remove("hidden");
+    document.getElementById("footer").classList.remove("hidden");
+    setTimeout(typeFooter, 500);
+  }
+}
+function typeFooter() {
+  if (footerIndex < footerText.length) {
+    document.getElementById("footer").innerHTML += footerText.charAt(footerIndex);
+    footerIndex++;
+    setTimeout(typeFooter, 80);
+  }
+}
+setTimeout(typeTitle, 500);
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let w, h;
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+const stars = [];
+for(let i=0;i<100;i++){
+  stars.push({x: Math.random()*w,y: Math.random()*h,r: Math.random()*1.5,dx:(Math.random()-0.5)*0.3,dy:(Math.random()-0.5)*0.3});
+}
+function animateStars(){
+  ctx.clearRect(0,0,w,h);
+  stars.forEach(s=>{
+    s.x += s.dx;
+    s.y += s.dy;
+    if(s.x<0) s.x=w;
+    if(s.x>w) s.x=0;
+    if(s.y<0) s.y=h;
+    if(s.y>h) s.y=0;
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle="#00ffbb";
+    ctx.fill();
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+const cursor = document.getElementById('cursor');
+let mouseX = w/2, mouseY = h/2;
+let curX = w/2, curY = h/2;
+document.addEventListener('mousemove', e => {mouseX = e.pageX; mouseY = e.pageY;});
+function moveCursor(){
+  const dx = mouseX - curX;
+  const dy = mouseY - curY;
+  curX += dx * 1;
+  curY += dy * 1;
+  cursor.style.left = curX + "px";
+  cursor.style.top = curY + "px";
+  requestAnimationFrame(moveCursor);
+}
+moveCursor();
+document.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.open(this.href,'_blank');
+  });
+});
+</script>
+</body>
+</html>
